@@ -9,6 +9,7 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const [selectedSize, setSelectedSize] = useState<string>(product.sizes[0] || '');
   const [selectedColor, setSelectedColor] = useState<string>(product.colors[0] || '');
+  const [isHovering, setIsHovering] = useState(false);
 
   const handleOrder = () => {
     const whatsappLink = generateWhatsAppLink(
@@ -20,17 +21,39 @@ export default function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="group relative bg-white rounded-lg overflow-hidden hover:shadow-xl transition-all duration-300">
-      <div className="aspect-square bg-gray-100 overflow-hidden">
+    <div
+      className="relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-2xl transition-shadow duration-300"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
+      <div className="aspect-square bg-gray-100 overflow-hidden relative">
         {product.image_url ? (
           <img
             src={product.image_url}
             alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className={`w-full h-full object-cover transition-transform duration-500 ${
+              isHovering ? 'scale-110' : 'scale-100'
+            }`}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-400">
             <span className="text-6xl">👕</span>
+          </div>
+        )}
+
+        {isHovering && (
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent animate-fade-in flex flex-col justify-end p-4">
+            <div className="text-white space-y-2">
+              <h3 className="font-semibold text-lg line-clamp-2">
+                {product.name}
+              </h3>
+              <div className="flex items-center justify-between">
+                <span className="text-xl font-bold">KSh {product.price.toLocaleString()}</span>
+                {!product.in_stock && (
+                  <span className="text-xs bg-red-500 px-2 py-1 rounded">Out of Stock</span>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </div>
